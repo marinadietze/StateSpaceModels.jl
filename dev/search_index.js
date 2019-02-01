@@ -29,7 +29,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "Notes",
     "category": "section",
-    "text": "This package is under development and some features may be changed or added.StateSpaceModels.jl is a package for modeling, forecasting and simulating time series in a state space framework.Estimation is done through function statespace and will automatically be run in parallel with all the currently active threads.Simulation of scenarios is done through function simulate."
+    "text": "StateSpaceModels.jl is a package for modeling, forecasting and simulating time series in a state space framework. Implementations were made based on the book Time series analysis by state space methods: J. Durbin and S.J. Koopman."
 },
 
 {
@@ -52,6 +52,30 @@ var documenterSearchIndex = {"docs": [
     "location": "manual/#Manual-1",
     "page": "Manual",
     "title": "Manual",
+    "category": "section",
+    "text": ""
+},
+
+{
+    "location": "manual/#Estimation-1",
+    "page": "Manual",
+    "title": "Estimation",
+    "category": "section",
+    "text": "The model estimation is made using the function statespace(y, s; X, nseeds). It receives as argument the timeseries and the desired seasonality s.The user can input explanatory variables in an Array{Float64, 2} variable X and specify the desired number of seeds to perform the estimation nseeds.ss = statespace(y, s; X = X, nseeds = nseeds)"
+},
+
+{
+    "location": "manual/#Simulation-1",
+    "page": "Manual",
+    "title": "Simulation",
+    "category": "section",
+    "text": "Simulation is made using the function simulate. It receives as argument a StateSpace object, the number of steps ahead N and the number of scenarios to simulate S.simulation = simulate(ss, N, S)"
+},
+
+{
+    "location": "manual/#Example-1",
+    "page": "Manual",
+    "title": "Example",
     "category": "section",
     "text": ""
 },
