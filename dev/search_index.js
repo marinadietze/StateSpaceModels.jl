@@ -21,7 +21,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "Installation",
     "category": "section",
-    "text": "This package is unregistered so you will need to Pkg.add it as follows:Pkg.add(\"https://github.com/LAMPSPUC/StateSpaceModels.jl.git\")"
+    "text": "This package is unregistered so you will need to Pkg.add it as follows:pkg> add https://github.com/LAMPSPUC/StateSpaceModels.jl.git"
 },
 
 {
@@ -29,7 +29,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "Notes",
     "category": "section",
-    "text": "StateSpaceModels.jl is a package for modeling, forecasting and simulating time series in a state space framework. Implementations were made based on the book Time series analysis by state space methods: J. Durbin and S.J. Koopman."
+    "text": "StateSpaceModels.jl is a package for modeling, forecasting and simulating time series in a state space framework based on structural models of Harvey (1989), in which a time series is decomposed in trend, slope and seasonals. Implementations were made based on the book \"Time Series Analysis by State Space Methods\" (2012) by J. Durbin and S. J. Koopman."
 },
 
 {
@@ -37,7 +37,7 @@ var documenterSearchIndex = {"docs": [
     "page": "Home",
     "title": "Features",
     "category": "section",
-    "text": "Current features:Basic structural model (level, slope, seasonal)\nExogenous variables\nSquare-root Kalman Filter and smoother\nBig Kappa initialization\nMonte Carlo simulation\nParallel MLE estimation\nMultivariate modelingFuture features (work in progress):User-defined model\nCycles\nForecasting and confidence intervals\nCompletion of missing values\nDifferent models for each variable in multivariate case\nStructural break\nExact initialization"
+    "text": "Current features:Basic structural model (level, slope, seasonal)\nExogenous variables\nSquare-root Kalman Filter and smoother\nBig Kappa initialization\nMonte Carlo simulation\nMaximum likelihood estimation\nMultivariate modelingFuture features (work in progress):User-defined model\nCycles\nForecasting and confidence intervals\nCompletion of missing values\nDifferent models for each variable in multivariate case\nStructural break\nExact initialization"
 },
 
 {
