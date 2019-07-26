@@ -1,30 +1,30 @@
 <!DOCTYPE html>
 <html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Examples · StateSpaceModels.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>StateSpaceModels.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../">Home</a></li><li><a class="toctext" href="../manual/">Manual</a></li><li class="current"><a class="toctext" href>Examples</a><ul class="internal"><li><a class="toctext" href="#Air-Passengers-1">Air Passengers</a></li><li><a class="toctext" href="#Vehicle-tracking-1">Vehicle tracking</a></li></ul></li><li><a class="toctext" href="../reference/">Reference</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Examples</a></li></ul><a class="edit-page" href="https://github.com/LAMPSPUC/StateSpaceModels.jl/blob/master/docs/src/examples.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Examples</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Examples-1" href="#Examples-1">Examples</a></h1><h2><a class="nav-anchor" id="Air-Passengers-1" href="#Air-Passengers-1">Air Passengers</a></h2><p>Let&#39;s take the classical Air Passenger time series as an example. In order to avoid multiplicative effects, we use the well-known approach of taking the log of the series. The code is in the example folder.</p><pre><code class="language-julia">using CSV, StateSpaceModels, Plots, Statistics, Dates
 
-#load the AirPassengers dataset
+# Load the AirPassengers dataset
 AP = CSV.read(&quot;AirPassengers.csv&quot;)
 
-#Take the log of the series
+# Take the log of the series
 logAP = log.(Array{Float64}(AP[:Passengers]))
 
-p1 = plot(AP[:Date], logAP, label = &quot;AirPassengers timeseries&quot;, size = (1000, 500))</code></pre><p><img src="../assets/logofairpassengers.png" alt="Log of Air Passengers time series"/></p><p>Estimating a <code>StateSpaceModel</code> gives us the trend and seasonal components of the time series.</p><pre><code class="language-julia">#Define its seasonality 
+p1 = plot(AP[:Date], logAP, label = &quot;AirPassengers timeseries&quot;, size = (1000, 500))</code></pre><p><img src="../assets/logofairpassengers.png" alt="Log of Air Passengers time series"/></p><p>Estimating a <code>StateSpaceModel</code> gives us the trend and seasonal components of the time series.</p><pre><code class="language-julia"># Define its seasonality 
 s = 12
 
-#Estimate a StateSpace Structure
+# Estimate a StateSpace Structure
 ss = statespace(logAP, s)
 
-#Analyze its decomposition in seasonal and trend
+# Analyze its decomposition in seasonal and trend
 p2 = plot(AP[:Date], ss.state.seasonal, label = &quot;AirPassengers seasonal&quot;, size = (1000, 500))
-p3 = plot(AP[:Date], ss.state.trend, label = &quot;AirPassengers trend&quot;, size = (1000, 500))</code></pre><p><img src="../assets/trendairpassengers.png" alt="Lof of Air Passengers trend component"/> <img src="../assets/seasonalairpassengers.png" alt="Log of Air Passengers seasonal component"/></p><p>We can also generate future scenarios for this time series through Monte Carlo simulation. In this example, we simulate 100 scenarios for up to five years (60 time periods) ahead.</p><pre><code class="language-julia">#Simulate 100 scenarios, 60 steps ahead
+p3 = plot(AP[:Date], ss.state.trend, label = &quot;AirPassengers trend&quot;, size = (1000, 500))</code></pre><p><img src="../assets/trendairpassengers.png" alt="Log of Air Passengers trend component"/> <img src="../assets/seasonalairpassengers.png" alt="Log of Air Passengers seasonal component"/></p><p>We can also generate future scenarios for this time series through Monte Carlo simulation. In this example, we simulate 100 scenarios for up to five years (60 time periods) ahead.</p><pre><code class="language-julia"># Simulate 100 scenarios, 60 steps ahead
 num_scenarios = 100
 num_steps_ahead = 60
 simulation = simulate(ss, num_steps_ahead, num_scenarios)
 
-#Define simulation dates
+# Define simulation dates
 firstdate = AP[:Date][end] + Month(1)
 newdates = collect(firstdate:Month(1):firstdate + Month(num_steps_ahead - 1))
 
-#Evaluating the mean of the forecast and its quantiles
+# Evaluating the mean of the forecast and its quantiles
 simulation_mean = mean(simulation, dims = 3)[1, :, :]
 
 n = length(logAP)
