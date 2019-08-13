@@ -53,6 +53,11 @@ function update_ZP!(ZP::AbstractArray{T}, Z::AbstractArray{T}, P::AbstractArray{
     return 
 end
 
+function update_ZP!(ZP::AbstractArray{T}, Z::AbstractMatrix{T}, P::AbstractArray{T}, t::Int) where T <: AbstractFloat
+    @inbounds @views mul!(ZP, Z, P[:, :, t])
+    return 
+end
+
 function update_K!(K::AbstractArray{Typ}, P_Ztransp_invF::AbstractArray{Typ}, T::AbstractArray{Typ}, t::Int) where Typ <: AbstractFloat
     @inbounds @views mul!(K[:, :, t], T, P_Ztransp_invF)
     return
@@ -75,6 +80,17 @@ function update_v!(v::AbstractArray{T}, y::AbstractArray{T}, Z::AbstractArray{T}
         v[t, i] = y[t, i]
         for j in axes(Z, 2)
             v[t, i] -= Z[i, j, t]*a[t, j]
+        end
+    end
+    return 
+end
+
+function update_v!(v::AbstractArray{T}, y::AbstractArray{T}, Z::AbstractMatrix{T}, a::AbstractArray{T}, t::Int) where T <: AbstractFloat
+    # v[t, :] = y[t, :] - Z[:, :, t]*a[t, :]
+    @inbounds for i in axes(Z, 1)
+        v[t, i] = y[t, i]
+        for j in axes(Z, 2)
+            v[t, i] -= Z[i, j]*a[t, j]
         end
     end
     return 
@@ -114,6 +130,12 @@ end
 
 function update_F!(F::AbstractArray{T}, ZP::AbstractArray{T}, Z::AbstractArray{T}, H::AbstractArray{T}, t::Int) where T <: AbstractFloat
     @views @inbounds LinearAlgebra.BLAS.gemm!('N', 'T', 1.0, ZP, Z[:, :, t], 0.0, F[:, :, t]) # F_t = Z_t * P_t * Z_t
+    sum_matrix!(F, H, t, 0) # F[:, :, t] .+= H
+    return
+end
+
+function update_F!(F::AbstractArray{T}, ZP::AbstractArray{T}, Z::AbstractMatrix{T}, H::AbstractArray{T}, t::Int) where T <: AbstractFloat
+    @views @inbounds LinearAlgebra.BLAS.gemm!('N', 'T', 1.0, ZP, Z, 0.0, F[:, :, t]) # F_t = Z_t * P_t * Z_t
     sum_matrix!(F, H, t, 0) # F[:, :, t] .+= H
     return
 end

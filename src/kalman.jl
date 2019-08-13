@@ -6,6 +6,7 @@ Kalman filter with big Kappa initialization, i.e., initializing state variances 
 function kalman_filter(model::StateSpaceModel, H::Matrix{Typ}, Q::Matrix{Typ}; tol::Typ = 1e-5) where Typ <: AbstractFloat
 
     time_invariant = model.mode == "time-invariant"
+    Z = time_invariant ? model.Z[:, :, 1] : model.Z # If it is time invariant Z does not change
 
     # Predictive state and its covariance
     a = Matrix{Float64}(undef, model.dim.n+1, model.dim.m)
@@ -45,7 +46,7 @@ function kalman_filter(model::StateSpaceModel, H::Matrix{Typ}, Q::Matrix{Typ}; t
             update_a!(a, att, model.T, t) # a_t+1 = T * att_t
             update_P!(P, model.T, Ptt, RQR, t) # P_t+1 = T * Ptt_t * T' + RQR'
         elseif steadystate
-            update_v!(v, model.y, model.Z, a, t) # v_t = y_t - Z_t * a_t
+            update_v!(v, model.y, Z, a, t) # v_t = y_t - Z_t * a_t
             repeat_matrix_t_plus_1!(F, t-1) # F[:, :, t]   = F[:, :, t-1]
             repeat_matrix_t_plus_1!(K, t-1) # K[:, :, t]   = K[:, :, t-1]
             update_att!(att, a, P_Ztransp_invF, v, t) # att_t = a_t + P_t * Z_t * F^-1_t * v_t
@@ -53,9 +54,9 @@ function kalman_filter(model::StateSpaceModel, H::Matrix{Typ}, Q::Matrix{Typ}; t
             update_a!(a, att, model.T, t) # a_t+1 = T * att_t
             repeat_matrix_t_plus_1!(P, t) # P_t+1 = P_t
         else
-            update_v!(v, model.y, model.Z, a, t) # v_t = y_t - Z_t * a_t
-            update_ZP!(ZP, model.Z, P, t) # ZP = Z[:, :, t] * P[:, :, t]
-            update_F!(F, ZP, model.Z, H, t) # F_t = Z_t * P_t * Z_t + H
+            update_v!(v, model.y, Z, a, t) # v_t = y_t - Z_t * a_t
+            update_ZP!(ZP, Z, P, t) # ZP = Z[:, :, t] * P[:, :, t]
+            update_F!(F, ZP, Z, H, t) # F_t = Z_t * P_t * Z_t + H
             update_P_Ztransp_Finv!(P_Ztransp_invF, ZP, F, t) # P_Ztransp_invF   = ZP' * invF(F, t)
             update_K!(K, P_Ztransp_invF, model.T, t) # K_t = T * P_t * Z_t * F^-1_t
             update_att!(att, a, P_Ztransp_invF, v, t) # att_t = a_t + P_t * Z_t * F^-1_t * v_t
